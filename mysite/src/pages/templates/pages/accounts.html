@@ -46,6 +46,19 @@
 			<input type="text" name="iban"/><br/>
             <input type="submit" value="Send"/>
         </form>
+
+        <form method="POST">
+			{% csrf_token %}
+
+            <span>Import balance from K-mafia URL:</span><br/>
+            <input type="text" name="url"/><br/>
+
+            <input type="submit" value="Import"/>
+        </form>
+
+        {% if import %}
+        <p>{{ import }}</p>
+        {% endif %}
     </body>
 
 

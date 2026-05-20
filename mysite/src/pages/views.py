@@ -7,6 +7,7 @@ from .models import Account
 from django.db.models import Q
 from django.db import transaction
 import json
+import requests
 
 
 
@@ -41,13 +42,13 @@ def transfer(sender, receiver, amount):
 def homePageView(request):
 	error = None
 	if request.method == 'POST':
-			sender = request.POST.get('from')
-			receiver = request.POST.get('to')
-			amount = int(request.POST.get('amount'))
-			print(sender, receiver, amount)
-			if transfer(sender, receiver, amount) is None:
-				print("Wrong")
-				error = "Invalid values"
+		sender = request.POST.get('from')
+		receiver = request.POST.get('to')
+		amount = int(request.POST.get('amount'))
+		print(sender, receiver, amount)
+		if transfer(sender, receiver, amount) is None:
+			print("Wrong")
+			error = "Invalid values"
 
 	accounts = Account.objects.all()
 	context = {'accounts': accounts, 'error': error}
@@ -56,6 +57,9 @@ def homePageView(request):
 @login_required
 def accountView(request, account):
 
+	
+
+
 	# Broken Access Control:
 	#if account != request.user.username:
 	# 	print("Error")
@@ -63,7 +67,24 @@ def accountView(request, account):
 	#accounts = Account.objects.filter(owner = request.user)
 
 	accounts = Account.objects.filter(owner__username=account)
-	return render(request, 'pages/accounts.html', {'accounts': accounts})
+	context = {'accounts': accounts}
+
+	# Server Side Request Forgery (SSRF)
+	if request.method == 'POST':
+		url = str(request.POST.get('url'))
+		session = requests.Session()
+		r = session.get(url)
+		context['import'] = r.text
+
+		# if url.startswith("https://www.kmafia"):
+		#	session = requests.Session()
+		#	r = session.get(url)
+		#	context['import'] = r.text
+		# else:
+		#	context['import'] = "Invalid url"
+
+
+	return render(request, 'pages/accounts.html', context)
 
 def evilPageView(request):
     return render(request, 'pages/csrf.html')
