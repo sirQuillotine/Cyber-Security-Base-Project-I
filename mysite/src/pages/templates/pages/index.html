@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+    <head>
+        <title>S-mafia</title>
+    </head>
+
+
+    <body>
+		<h1>S-mafia</h1>
+
+        <table>
+		<tr>
+		<th style="text-align:left">Username: <td>{{user.username}} 
+		</table>
+
+
+        <form action='/logout/' method="POST">
+			{% csrf_token %}
+            <input type="submit" value="Logout"/>
+        </form>
+
+        <form action='accounts/{{user.username}}/' method="GET">
+            <input type="submit" value="Your Accounts"/>
+        </form>
+		
+        <h2>Transfer money</h2>
+
+        {% if error %}
+        <p>{{ error }}</p>
+        {% endif %}
+
+        <form method="POST">
+			<!--{% csrf_token %}    -->
+            <span>From:</span><br/>
+            <select name="from">
+			{% for account in accounts %}
+                <option value="{{account.iban}}">{{account.iban}}</option>
+			{% endfor %}
+            </select><br/>
+
+            <span>To:</span><br/>
+            <select name="to">
+			{% for account in accounts %}
+                <option value="{{account.iban}}">{{account.iban}}</option>
+			{% endfor %}
+            </select><br/>
+
+            <span>Amount:</span><br/>
+            <input type="number" name="amount"/><br/>
+
+            <input type="submit" value="Transfer!"/>
+        </form>
+
+    </body>
+
+
+    </body>
+</html>
